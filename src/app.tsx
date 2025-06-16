@@ -3,6 +3,8 @@ import { requestOpenExternalUrl } from "@canva/platform";
 import { FormattedMessage, useIntl } from "react-intl";
 import * as styles from "styles/components.css";
 import { useAddElement } from "utils/use_add_element";
+import { Header } from "./components/Header";
+import { HotspotsManager } from "./components/HotspotsManager";
 
 export const DOCS_URL = "https://www.canva.dev/docs/apps/";
 
@@ -29,6 +31,8 @@ export const App = () => {
 
   return (
     <div className={styles.scrollContainer}>
+      <Header />
+      <HotspotsManager />
       <Rows spacing="2u">
         <Text>
           <FormattedMessage
