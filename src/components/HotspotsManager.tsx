@@ -1,14 +1,7 @@
 import React, { useState } from "react";
-import {
-  Rows,
-  Text,
-  Title,
-  Button,
-  Select,
-  Columns,
-  Column,
-  Box,
-} from "@canva/app-ui-kit";
+import { Rows, Text, Title } from "@canva/app-ui-kit";
+import { HotspotCard } from "./HotspotCard";
+import { AddHotspotButton } from "./AddHotspotButton";
 
 // Mock data for demonstration - in real app this would come from state management
 interface Hotspot {
@@ -83,58 +76,20 @@ export const HotspotsManager: React.FC = () => {
       ) : (
         <Rows spacing="1u">
           {hotspots.map((hotspot) => (
-            <Box
+            <HotspotCard
               key={hotspot.id}
-              padding="2u"
-              borderRadius="standard"
-              background="neutralLow"
-            >
-              <Columns spacing="1u" alignY="center">
-                <Column>
-                  {editingId === hotspot.id ? (
-                    <Rows spacing="0.5u">
-                      <Text variant="bold">{hotspot.elementName}</Text>
-                      <Select
-                        options={mockPages}
-                        value={hotspot.targetPage.toString()}
-                        onChange={(value) =>
-                          handlePageChange(hotspot.id, value)
-                        }
-                        placeholder="Select target page"
-                      />
-                    </Rows>
-                  ) : (
-                    <Rows spacing="0.5u">
-                      <Text variant="bold">{hotspot.elementName}</Text>
-                      <Text tone="tertiary">→ Page {hotspot.targetPage}</Text>
-                    </Rows>
-                  )}
-                </Column>
-                <Column width="content">
-                  <Rows spacing="0.5u">
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleEdit(hotspot.id)}
-                    >
-                      {editingId === hotspot.id ? "Cancel" : "Edit"}
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleDelete(hotspot.id)}
-                    >
-                      Delete
-                    </Button>
-                  </Rows>
-                </Column>
-              </Columns>
-            </Box>
+              hotspot={hotspot}
+              isEditing={editingId === hotspot.id}
+              pages={mockPages}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onPageChange={handlePageChange}
+            />
           ))}
         </Rows>
       )}
 
-      <Button variant="secondary" stretch>
-        + Add New Hotspot
-      </Button>
+      <AddHotspotButton onClick={() => console.log("Add new hotspot")} />
     </Rows>
   );
 };
