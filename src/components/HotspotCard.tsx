@@ -8,23 +8,7 @@ import {
   Column,
   Box,
 } from "@canva/app-ui-kit";
-
-interface Hotspot {
-  id: string;
-  elementId: string;
-  elementName: string;
-  targetPage: number;
-  elementIcon: string;
-}
-
-interface HotspotCardProps {
-  hotspot: Hotspot;
-  isEditing: boolean;
-  pages: Array<{ value: string; label: string }>;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
-  onPageChange: (id: string, newPage: string) => void;
-}
+import { HotspotCardProps } from "../types";
 
 export const HotspotCard: React.FC<HotspotCardProps> = ({
   hotspot,

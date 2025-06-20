@@ -1,10 +1,6 @@
 import React from "react";
 import { Button } from "@canva/app-ui-kit";
-
-interface AddHotspotButtonProps {
-  onClick: () => void;
-  disabled?: boolean;
-}
+import { AddHotspotButtonProps } from "../types";
 
 export const AddHotspotButton: React.FC<AddHotspotButtonProps> = ({
   onClick,

@@ -1,17 +1,6 @@
 import React, { useState } from "react";
 import { Rows, Text, Title, Button, Columns, Column } from "@canva/app-ui-kit";
-
-interface Hotspot {
-  id: string;
-  elementId: string;
-  elementName: string;
-  targetPage: number;
-  elementIcon: string;
-}
-
-interface PreviewExportProps {
-  hotspots: Hotspot[];
-}
+import { PreviewExportProps } from "../types";
 
 export const PreviewExport: React.FC<PreviewExportProps> = ({ hotspots }) => {
   const [isExporting, setIsExporting] = useState(false);

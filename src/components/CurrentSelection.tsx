@@ -9,18 +9,7 @@ import {
   Column,
   Box,
 } from "@canva/app-ui-kit";
-
-interface SelectedElement {
-  id: string;
-  name: string;
-  type: string;
-}
-
-interface CurrentSelectionProps {
-  selectedElement: SelectedElement | null;
-  pages: Array<{ value: string; label: string }>;
-  onAddHotspot: (elementId: string, targetPage: number) => void;
-}
+import { CurrentSelectionProps } from "../types";
 
 export const CurrentSelection: React.FC<CurrentSelectionProps> = ({
   selectedElement,
