@@ -64,17 +64,14 @@ export const CurrentSelection: React.FC<CurrentSelectionProps> = ({
       ) : (
         <Box padding="2u" borderRadius="standard" background="neutral">
           <Rows spacing="1u">
-            <Columns spacing="1u" alignY="center">
-              <Column width="content">
-                <Text>📱</Text>
-              </Column>
-              <Column>
-                <Rows spacing="0.5u">
-                  <Text variant="bold">{selectedElement.name}</Text>
-                  <Text tone="tertiary">{selectedElement.type}</Text>
-                </Rows>
-              </Column>
-            </Columns>
+            <Text>
+              <span style={{ color: "var(--ui-kit-color-text-tertiary)" }}>
+                {selectedElement.type.charAt(0).toUpperCase() +
+                  selectedElement.type.slice(1)}
+                :
+              </span>{" "}
+              <span style={{ fontWeight: "bold" }}>{selectedElement.name}</span>
+            </Text>
 
             <Rows spacing="1u">
               <Text variant="bold">Link to page:</Text>

@@ -1,7 +1,6 @@
 import React from "react";
 import { Rows, Text, Title } from "@canva/app-ui-kit";
 import { HotspotCard } from "./HotspotCard";
-import { AddHotspotButton } from "./AddHotspotButton";
 
 interface HotspotsManagerProps {
   hotspots: Array<{
@@ -16,7 +15,6 @@ interface HotspotsManagerProps {
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
   onPageChange: (id: string, newPage: string) => void;
-  onAddNewHotspot: () => void;
 }
 
 export const HotspotsManager: React.FC<HotspotsManagerProps> = ({
@@ -26,7 +24,6 @@ export const HotspotsManager: React.FC<HotspotsManagerProps> = ({
   onEdit,
   onDelete,
   onPageChange,
-  onAddNewHotspot,
 }) => {
   return (
     <Rows spacing="2u">
@@ -51,8 +48,6 @@ export const HotspotsManager: React.FC<HotspotsManagerProps> = ({
           ))}
         </Rows>
       )}
-
-      <AddHotspotButton onClick={onAddNewHotspot} />
     </Rows>
   );
 };
