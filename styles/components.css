@@ -36,3 +36,12 @@
 .scrollContainer:focus-within::-webkit-scrollbar-thumb {
   visibility: visible;
 }
+
+/* Hotspot Manager Header Spacing */
+.hotspotsTitle {
+  margin-left: var(--ui-kit-space-2);
+}
+
+.clearAllButton {
+  margin-left: var(--ui-kit-space-3);
+}

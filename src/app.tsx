@@ -18,6 +18,65 @@ const generatePages = (count: number): Page[] => {
   }));
 };
 
+// Enhanced hotspot management utilities
+const STORAGE_KEY = "canva-prototype-hotspots";
+
+const saveHotspotsToStorage = (hotspots: Hotspot[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(hotspots));
+  } catch (error) {
+    console.warn("Failed to save hotspots to localStorage:", error);
+  }
+};
+
+const loadHotspotsFromStorage = (): Hotspot[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Validate that the loaded data has the expected structure
+      if (Array.isArray(parsed) && parsed.every(isValidHotspot)) {
+        return parsed;
+      }
+    }
+  } catch (error) {
+    console.warn("Failed to load hotspots from localStorage:", error);
+  }
+  return [];
+};
+
+const isValidHotspot = (hotspot: any): hotspot is Hotspot => {
+  return (
+    typeof hotspot === "object" &&
+    typeof hotspot.id === "string" &&
+    typeof hotspot.elementId === "string" &&
+    typeof hotspot.elementName === "string" &&
+    typeof hotspot.targetPage === "number" &&
+    typeof hotspot.elementIcon === "string"
+  );
+};
+
+const validateHotspot = (hotspot: Partial<Hotspot>): string | null => {
+  if (!hotspot.elementId?.trim()) {
+    return "Element ID is required";
+  }
+  if (!hotspot.elementName?.trim()) {
+    return "Element name is required";
+  }
+  if (!hotspot.targetPage || hotspot.targetPage < 1) {
+    return "Valid target page is required";
+  }
+  return null;
+};
+
+const isDuplicateHotspot = (
+  hotspots: Hotspot[],
+  elementId: string,
+  excludeId?: string,
+): boolean => {
+  return hotspots.some((h) => h.elementId === elementId && h.id !== excludeId);
+};
+
 export const App = () => {
   // Get real element selection from Canva
   const currentSelection = useSelection("plaintext");
@@ -28,26 +87,33 @@ export const App = () => {
   // Generate pages list based on user's specified count
   const pages = generatePages(pageCount);
 
-  // Centralized state management
-  const [hotspots, setHotspots] = useState<Hotspot[]>([
-    {
-      id: "1",
-      elementId: "e001",
-      elementName: "Button",
-      targetPage: 2,
-      elementIcon: "T",
-    },
-    {
-      id: "2",
-      elementId: "e002",
-      elementName: "Home Icon",
-      targetPage: 1,
-      elementIcon: "🖼️",
-    },
-  ]);
+  // Centralized state management with persistent storage
+  const [hotspots, setHotspots] = useState<Hotspot[]>(() => {
+    const stored = loadHotspotsFromStorage();
+    // If no stored data, return some sample data for development
+    return stored.length > 0
+      ? stored
+      : [
+          {
+            id: "1",
+            elementId: "e001",
+            elementName: "Button",
+            targetPage: 2,
+            elementIcon: "T",
+          },
+          {
+            id: "2",
+            elementId: "e002",
+            elementName: "Home Icon",
+            targetPage: 1,
+            elementIcon: "🖼️",
+          },
+        ];
+  });
 
   const [editingHotspotId, setEditingHotspotId] = useState<string | null>(null);
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   // State for storing the selected element - only set when text is ready
   const [selectedElement, setSelectedElement] =
@@ -93,15 +159,25 @@ export const App = () => {
     readTextContent();
   }, [currentSelection]);
 
-  // Auto-hide success alert after 3 seconds
+  // Auto-persist hotspots to localStorage whenever they change
   useEffect(() => {
-    if (showSuccessAlert) {
-      const timer = setTimeout(() => {
-        setShowSuccessAlert(false);
-      }, 3000);
+    saveHotspotsToStorage(hotspots);
+  }, [hotspots]);
+
+  // Auto-hide alerts after 4 seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(""), 4000);
       return () => clearTimeout(timer);
     }
-  }, [showSuccessAlert]);
+  }, [successMessage]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => setErrorMessage(""), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
 
   // Function to get the appropriate icon for different element types
   const getElementIcon = (elementType: string): string => {
@@ -121,47 +197,134 @@ export const App = () => {
     }
   };
 
-  // Hotspot management functions
+  // Enhanced hotspot management functions
   const handleAddHotspot = useCallback(
     (elementId: string, targetPage: number) => {
-      // Use the already-read element name from selectedElement
-      const elementName = selectedElement?.name || "Unknown Element";
-      const elementIcon = getElementIcon(selectedElement?.type || "");
+      try {
+        // Validation checks
+        if (!selectedElement) {
+          setErrorMessage("No element selected");
+          return;
+        }
 
-      const newHotspot: Hotspot = {
-        id: Date.now().toString(), // Simple ID generation
-        elementId,
-        elementName,
-        targetPage,
-        elementIcon,
-      };
+        if (targetPage < 1 || targetPage > pageCount) {
+          setErrorMessage(`Target page must be between 1 and ${pageCount}`);
+          return;
+        }
 
-      setHotspots((prev) => [...prev, newHotspot]);
-      setShowSuccessAlert(true);
-      console.log("Added hotspot:", newHotspot);
+        // Check for duplicates
+        if (isDuplicateHotspot(hotspots, elementId)) {
+          setErrorMessage("A hotspot already exists for this element");
+          return;
+        }
+
+        const elementName = selectedElement.name || "Unknown Element";
+        const elementIcon = getElementIcon(selectedElement.type || "");
+
+        const newHotspot: Hotspot = {
+          id: `hotspot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          elementId,
+          elementName,
+          targetPage,
+          elementIcon,
+        };
+
+        // Final validation
+        const validationError = validateHotspot(newHotspot);
+        if (validationError) {
+          setErrorMessage(validationError);
+          return;
+        }
+
+        setHotspots((prev) => [...prev, newHotspot]);
+        setSuccessMessage(
+          `Hotspot added: "${elementName}" → Page ${targetPage}`,
+        );
+
+        console.log("Added hotspot:", newHotspot);
+      } catch (error) {
+        console.error("Error adding hotspot:", error);
+        setErrorMessage("Failed to add hotspot. Please try again.");
+      }
     },
-    [selectedElement],
+    [selectedElement, hotspots, pageCount],
   );
 
   const handleEditHotspot = useCallback((id: string) => {
     setEditingHotspotId((prev) => (prev === id ? null : id));
   }, []);
 
-  const handleDeleteHotspot = useCallback((id: string) => {
-    setHotspots((prev) => prev.filter((h) => h.id !== id));
-    setEditingHotspotId(null);
-    console.log("Deleted hotspot:", id);
-  }, []);
+  const handleDeleteHotspot = useCallback(
+    (id: string) => {
+      try {
+        const hotspotToDelete = hotspots.find((h) => h.id === id);
+        if (!hotspotToDelete) {
+          setErrorMessage("Hotspot not found");
+          return;
+        }
 
-  const handleUpdateHotspot = useCallback((id: string, newPage: string) => {
-    setHotspots((prev) =>
-      prev.map((h) =>
-        h.id === id ? { ...h, targetPage: parseInt(newPage) } : h,
-      ),
-    );
-    setEditingHotspotId(null);
-    console.log("Updated hotspot:", id, "to page:", newPage);
-  }, []);
+        setHotspots((prev) => prev.filter((h) => h.id !== id));
+        setEditingHotspotId(null);
+        // Delete success message now handled locally in HotspotsManager
+
+        console.log("Deleted hotspot:", id);
+      } catch (error) {
+        console.error("Error deleting hotspot:", error);
+        setErrorMessage("Failed to delete hotspot. Please try again.");
+      }
+    },
+    [hotspots],
+  );
+
+  const handleUpdateHotspot = useCallback(
+    (id: string, newPage: string) => {
+      try {
+        const targetPage = parseInt(newPage);
+
+        // Validation
+        if (isNaN(targetPage) || targetPage < 1 || targetPage > pageCount) {
+          setErrorMessage(`Target page must be between 1 and ${pageCount}`);
+          return;
+        }
+
+        const hotspotToUpdate = hotspots.find((h) => h.id === id);
+        if (!hotspotToUpdate) {
+          setErrorMessage("Hotspot not found");
+          return;
+        }
+
+        setHotspots((prev) =>
+          prev.map((h) => (h.id === id ? { ...h, targetPage } : h)),
+        );
+        setEditingHotspotId(null);
+
+        console.log("Updated hotspot:", id, "to page:", targetPage);
+      } catch (error) {
+        console.error("Error updating hotspot:", error);
+        setErrorMessage("Failed to update hotspot. Please try again.");
+      }
+    },
+    [hotspots, pageCount],
+  );
+
+  const handleClearAllHotspots = useCallback(() => {
+    try {
+      if (hotspots.length === 0) {
+        setErrorMessage("No hotspots to clear");
+        return;
+      }
+
+      const count = hotspots.length;
+      setHotspots([]);
+      setEditingHotspotId(null);
+      setSuccessMessage(`Cleared ${count} hotspot${count !== 1 ? "s" : ""}`);
+
+      console.log("Cleared all hotspots");
+    } catch (error) {
+      console.error("Error clearing hotspots:", error);
+      setErrorMessage("Failed to clear hotspots. Please try again.");
+    }
+  }, [hotspots]);
 
   return (
     <div className={styles.scrollContainer}>
@@ -176,9 +339,9 @@ export const App = () => {
           onAddHotspot={handleAddHotspot}
         />
 
-        {showSuccessAlert && (
-          <Alert tone="positive" title="Hotspot added successfully!" />
-        )}
+        {successMessage && <Alert tone="positive" title={successMessage} />}
+
+        {errorMessage && <Alert tone="critical" title={errorMessage} />}
 
         <HotspotsManager
           hotspots={hotspots}
@@ -187,6 +350,7 @@ export const App = () => {
           onEdit={handleEditHotspot}
           onDelete={handleDeleteHotspot}
           onPageChange={handleUpdateHotspot}
+          onClearAll={handleClearAllHotspots}
         />
 
         <PreviewExport hotspots={hotspots} />

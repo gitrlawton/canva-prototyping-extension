@@ -38,10 +38,11 @@ export interface CurrentSelectionProps {
 export interface HotspotsManagerProps {
   hotspots: Hotspot[];
   pages: Page[];
-  onEditHotspot: (id: string) => void;
-  onDeleteHotspot: (id: string) => void;
-  onUpdateHotspot: (id: string, newPage: string) => void;
-  onAddNewHotspot: () => void;
+  editingHotspotId: string | null;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+  onPageChange: (id: string, newPage: string) => void;
+  onClearAll: () => void;
 }
 
 export interface PreviewExportProps {
