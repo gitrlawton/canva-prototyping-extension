@@ -7,19 +7,26 @@ import { Header } from "./components/Header";
 import { CurrentSelection } from "./components/CurrentSelection";
 import { HotspotsManager } from "./components/HotspotsManager";
 import { PreviewExport } from "./components/PreviewExport";
+import { PageCount } from "./components/PageCount";
 import { Hotspot, SelectedElement, Page } from "./types";
 
-// Mock pages data - in real app this would come from Canva design
-const mockPages: Page[] = [
-  { value: "1", label: "Page 1" },
-  { value: "2", label: "Page 2" },
-  { value: "3", label: "Page 3" },
-  { value: "4", label: "Page 4" },
-];
+// Generate pages list based on user-specified count
+const generatePages = (count: number): Page[] => {
+  return Array.from({ length: count }, (_, i) => ({
+    value: (i + 1).toString(),
+    label: `Page ${i + 1}`,
+  }));
+};
 
 export const App = () => {
   // Get real element selection from Canva
   const currentSelection = useSelection("plaintext");
+
+  // User-specified page count (default to 5 as a reasonable starting point)
+  const [pageCount, setPageCount] = useState(5);
+
+  // Generate pages list based on user's specified count
+  const pages = generatePages(pageCount);
 
   // Centralized state management
   const [hotspots, setHotspots] = useState<Hotspot[]>([
@@ -161,9 +168,11 @@ export const App = () => {
       <Rows spacing="3u">
         <Header />
 
+        <PageCount pageCount={pageCount} onPageCountChange={setPageCount} />
+
         <CurrentSelection
           selectedElement={selectedElement}
-          pages={mockPages}
+          pages={pages}
           onAddHotspot={handleAddHotspot}
         />
 
@@ -173,7 +182,7 @@ export const App = () => {
 
         <HotspotsManager
           hotspots={hotspots}
-          pages={mockPages}
+          pages={pages}
           editingHotspotId={editingHotspotId}
           onEdit={handleEditHotspot}
           onDelete={handleDeleteHotspot}
