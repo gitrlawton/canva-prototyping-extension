@@ -16,26 +16,29 @@ export const CurrentSelection: React.FC<CurrentSelectionProps> = ({
   pages,
   onAddHotspot,
 }) => {
-  const [selectedPage, setSelectedPage] = useState<string>("");
+  const [sourcePage, setSourcePage] = useState<string>("");
+  const [targetPage, setTargetPage] = useState<string>("");
   const [isAdding, setIsAdding] = useState(false);
 
   const handleAddHotspot = async () => {
-    if (!selectedElement || !selectedPage) return;
+    if (!selectedElement || !sourcePage || !targetPage) return;
 
     setIsAdding(true);
 
     try {
-      // Convert page string to number
-      const targetPageNumber = parseInt(selectedPage);
+      // Convert page strings to numbers
+      const sourcePageNumber = parseInt(sourcePage);
+      const targetPageNumber = parseInt(targetPage);
 
       // Call the parent's add hotspot function
-      onAddHotspot(selectedElement.id, targetPageNumber);
+      onAddHotspot(selectedElement.id, sourcePageNumber, targetPageNumber);
 
       // Reset the form
-      setSelectedPage("");
+      setSourcePage("");
+      setTargetPage("");
 
       console.log(
-        `Added hotspot: ${selectedElement.name} → Page ${targetPageNumber}`,
+        `Added hotspot: ${selectedElement.name} on Page ${sourcePageNumber} → Page ${targetPageNumber}`,
       );
     } catch (error) {
       console.error("Failed to add hotspot:", error);
@@ -44,7 +47,8 @@ export const CurrentSelection: React.FC<CurrentSelectionProps> = ({
     }
   };
 
-  const canAddHotspot = selectedElement && selectedPage && !isAdding;
+  const canAddHotspot =
+    selectedElement && sourcePage && targetPage && !isAdding;
 
   return (
     <Rows spacing="2u">
@@ -74,11 +78,20 @@ export const CurrentSelection: React.FC<CurrentSelectionProps> = ({
             </Text>
 
             <Rows spacing="1u">
-              <Text variant="bold">Link to page:</Text>
+              <Text variant="bold">Hotspot appears on page:</Text>
               <Select
                 options={pages}
-                value={selectedPage}
-                onChange={setSelectedPage}
+                value={sourcePage}
+                onChange={setSourcePage}
+                placeholder="Choose source page"
+                disabled={isAdding}
+              />
+
+              <Text variant="bold">Links to page:</Text>
+              <Select
+                options={pages}
+                value={targetPage}
+                onChange={setTargetPage}
                 placeholder="Choose target page"
                 disabled={isAdding}
               />

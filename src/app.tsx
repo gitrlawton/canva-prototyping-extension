@@ -8,6 +8,7 @@ import { CurrentSelection } from "./components/CurrentSelection";
 import { HotspotsManager } from "./components/HotspotsManager";
 import { PreviewExport } from "./components/PreviewExport";
 import { PageCount } from "./components/PageCount";
+import { PreviewModal } from "./components/PreviewModal";
 import { Hotspot, SelectedElement, Page } from "./types";
 
 // Generate pages list based on user-specified count
@@ -52,6 +53,7 @@ const isValidHotspot = (hotspot: any): hotspot is Hotspot => {
     typeof hotspot.elementId === "string" &&
     typeof hotspot.elementName === "string" &&
     typeof hotspot.targetPage === "number" &&
+    typeof hotspot.sourcePage === "number" &&
     typeof hotspot.elementIcon === "string"
   );
 };
@@ -62,6 +64,9 @@ const validateHotspot = (hotspot: Partial<Hotspot>): string | null => {
   }
   if (!hotspot.elementName?.trim()) {
     return "Element name is required";
+  }
+  if (!hotspot.sourcePage || hotspot.sourcePage < 1) {
+    return "Valid source page is required";
   }
   if (!hotspot.targetPage || hotspot.targetPage < 1) {
     return "Valid target page is required";
@@ -98,6 +103,7 @@ export const App = () => {
             id: "1",
             elementId: "e001",
             elementName: "Button",
+            sourcePage: 1,
             targetPage: 2,
             elementIcon: "T",
           },
@@ -105,6 +111,7 @@ export const App = () => {
             id: "2",
             elementId: "e002",
             elementName: "Home Icon",
+            sourcePage: 2,
             targetPage: 1,
             elementIcon: "🖼️",
           },
@@ -199,7 +206,7 @@ export const App = () => {
 
   // Enhanced hotspot management functions
   const handleAddHotspot = useCallback(
-    (elementId: string, targetPage: number) => {
+    (elementId: string, sourcePage: number, targetPage: number) => {
       try {
         // Validation checks
         if (!selectedElement) {
@@ -207,8 +214,18 @@ export const App = () => {
           return;
         }
 
+        if (sourcePage < 1 || sourcePage > pageCount) {
+          setErrorMessage(`Source page must be between 1 and ${pageCount}`);
+          return;
+        }
+
         if (targetPage < 1 || targetPage > pageCount) {
           setErrorMessage(`Target page must be between 1 and ${pageCount}`);
+          return;
+        }
+
+        if (sourcePage === targetPage) {
+          setErrorMessage("Source and target pages must be different");
           return;
         }
 
@@ -225,6 +242,7 @@ export const App = () => {
           id: `hotspot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           elementId,
           elementName,
+          sourcePage,
           targetPage,
           elementIcon,
         };
@@ -238,7 +256,7 @@ export const App = () => {
 
         setHotspots((prev) => [...prev, newHotspot]);
         setSuccessMessage(
-          `Hotspot added: "${elementName}" → Page ${targetPage}`,
+          `Hotspot added: "${elementName}" on Page ${sourcePage} → Page ${targetPage}`,
         );
 
         console.log("Added hotspot:", newHotspot);
@@ -265,7 +283,6 @@ export const App = () => {
 
         setHotspots((prev) => prev.filter((h) => h.id !== id));
         setEditingHotspotId(null);
-        // Delete success message now handled locally in HotspotsManager
 
         console.log("Deleted hotspot:", id);
       } catch (error) {
@@ -279,7 +296,7 @@ export const App = () => {
   const handleUpdateHotspot = useCallback(
     (id: string, newPage: string) => {
       try {
-        const targetPage = parseInt(newPage);
+        const targetPage = parseInt(newPage, 10);
 
         // Validation
         if (isNaN(targetPage) || targetPage < 1 || targetPage > pageCount) {

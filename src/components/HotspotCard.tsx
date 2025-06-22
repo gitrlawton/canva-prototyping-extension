@@ -73,7 +73,9 @@ export const HotspotCard: React.FC<HotspotCardProps> = ({
             ) : (
               <Rows spacing="0.5u">
                 <Text variant="bold">{hotspot.elementName}</Text>
-                <Text tone="tertiary">→ Page {hotspot.targetPage}</Text>
+                <Text tone="tertiary">
+                  Page {hotspot.sourcePage} → Page {hotspot.targetPage}
+                </Text>
               </Rows>
             )}
           </Column>

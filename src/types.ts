@@ -5,6 +5,7 @@ export interface Hotspot {
   elementId: string;
   elementName: string;
   targetPage: number;
+  sourcePage: number; // Which page this hotspot appears on
   elementIcon: string;
 }
 
@@ -32,7 +33,11 @@ export interface HotspotCardProps {
 export interface CurrentSelectionProps {
   selectedElement: SelectedElement | null;
   pages: Page[];
-  onAddHotspot: (elementId: string, targetPage: number) => void;
+  onAddHotspot: (
+    elementId: string,
+    sourcePage: number,
+    targetPage: number,
+  ) => void;
 }
 
 export interface HotspotsManagerProps {
