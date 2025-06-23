@@ -4,10 +4,10 @@ A Canva App extension that allows users to create interactive prototypes by addi
 
 ## Features
 
-- Create clickable hotspots on any element in your Canva design
+- Create clickable hotspots on any text element in your Canva design
 - Link hotspots to specific pages within your design
 - Export your prototype as a zipped HTML file for sharing
-- Preview your interactive prototype directly within your browser
+- View your interactive prototype directly within your browser
 
 ## Getting Started
 
@@ -44,7 +44,7 @@ npm start
 
 1. Open your design in Canva
 2. Launch the Prototyping Extension from the Apps panel
-3. Select an element in your design
+3. Select a text element in your design
 4. Choose a target page for the hotspot
 5. Add the hotspot
 6. Repeat for all interactive elements
@@ -63,7 +63,7 @@ This project is built using:
 
 - React
 - TypeScript
-- Canva SDK
+- Canva App SDK
 
   ## Acknowledgments
 
@@ -94,17 +94,19 @@ Yes, you can add as many hotspots as needed to any page in your design.
 
 ### How does the application interact with the Canva SDK?
 
-The application uses Canva's selection API to detect when a user selects elements. It also uses the page navigation APIs to get information about pages and the export functionality to generate the interactive prototype.
+The application uses Canva's selection API to detect when a user select text elements. It also uses the page navigation APIs to get information about pages and the export functionality to generate the interactive prototype.
 
 ### How is the hotspot data structure designed?
 
 Hotspots are stored as an array of objects, each containing:
 
-- A unique identifier
-- The source element ID
-- The target page ID
-- Position and dimension data
-  This structure allows for efficient lookup and modification of hotspots.
+- A unique identifier (id)
+- The source element ID (elementId)
+- The element name (elementName)
+- The target page ID (targetPage)
+- The source page ID (sourcePage)
+
+This structure allows for efficient lookup and modification of hotspots.
 
 ### How does the export process work?
 
@@ -119,6 +121,6 @@ When a user exports their prototype:
 
 Potential improvements include:
 
-- Supporting linking more element types beyond text elements
-- Supporting querying the location of elements for a more realistic interactive experience
+- Supporting linking more element types besides text elements
+- Supporting querying the location of elements for a more realistic, interactive experience
 - Implementing a more robust, in-app preview system

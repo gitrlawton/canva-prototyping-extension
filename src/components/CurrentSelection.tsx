@@ -102,7 +102,7 @@ export const CurrentSelection: React.FC<CurrentSelectionProps> = ({
                 onClick={handleAddHotspot}
                 disabled={!canAddHotspot}
               >
-                {isAdding ? "Adding..." : "📍 Add Hotspot"}
+                {isAdding ? "Adding..." : "Add Hotspot"}
               </Button>
             </Rows>
           </Rows>
