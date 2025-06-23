@@ -295,11 +295,11 @@ const generatePreviewHTML = (hotspots: Hotspot[], pages: Page[]): string => {
         <div class="page-counter">
             Page <span id="currentPage">1</span> of ${pageCount}
         </div>
-        <button class="reset-btn" onclick="goToPage(1)">🏠 Reset</button>
+        <button class="reset-btn" onclick="goToPage(1)">Reset</button>
     </div>
 
     <div class="instructions">
-        Click on the blue hotspots to navigate between pages • Press Escape to close • Press Home or 1 to reset to page 1
+        Click on the red hotspots to navigate between pages • Click Reset to reset to page 1
     </div>
 
     <div class="canvas-container">

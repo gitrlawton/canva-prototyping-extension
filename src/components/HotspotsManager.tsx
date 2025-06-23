@@ -81,12 +81,12 @@ export const HotspotsManager: React.FC<HotspotsManagerProps> = ({
     <Rows spacing="2u">
       <Columns spacing="2u" alignY="center">
         <div className={styles.hotspotsTitle}>
-          <Title size="small">🔗 Hotspots ({hotspots.length})</Title>
+          <Title size="small">Hotspots ({hotspots.length})</Title>
         </div>
         {hotspots.length > 0 && (
           <div className={styles.clearAllButton}>
             <Button variant="secondary" onClick={onClearAll}>
-              🗑️ Clear All
+              Clear All
             </Button>
           </div>
         )}

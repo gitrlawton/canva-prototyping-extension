@@ -52,7 +52,7 @@ export const CurrentSelection: React.FC<CurrentSelectionProps> = ({
 
   return (
     <Rows spacing="2u">
-      <Title size="small">📌 Current Selection</Title>
+      <Title size="small">Current Selection</Title>
 
       {!selectedElement ? (
         <Box padding="2u" borderRadius="standard">

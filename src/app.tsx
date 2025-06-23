@@ -86,8 +86,8 @@ export const App = () => {
   // Get real element selection from Canva
   const currentSelection = useSelection("plaintext");
 
-  // User-specified page count (default to 5 as a reasonable starting point)
-  const [pageCount, setPageCount] = useState(5);
+  // User-specified page count (default to 0 as a reasonable starting point)
+  const [pageCount, setPageCount] = useState(0);
 
   // Generate pages list based on user's specified count
   const pages = generatePages(pageCount);
@@ -96,26 +96,7 @@ export const App = () => {
   const [hotspots, setHotspots] = useState<Hotspot[]>(() => {
     const stored = loadHotspotsFromStorage();
     // If no stored data, return some sample data for development
-    return stored.length > 0
-      ? stored
-      : [
-          {
-            id: "1",
-            elementId: "e001",
-            elementName: "Button",
-            sourcePage: 1,
-            targetPage: 2,
-            elementIcon: "T",
-          },
-          {
-            id: "2",
-            elementId: "e002",
-            elementName: "Home Icon",
-            sourcePage: 2,
-            targetPage: 1,
-            elementIcon: "🖼️",
-          },
-        ];
+    return stored;
   });
 
   const [editingHotspotId, setEditingHotspotId] = useState<string | null>(null);

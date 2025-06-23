@@ -47,7 +47,7 @@ export const PreviewExport: React.FC<PreviewExportProps> = ({ hotspots }) => {
       }
 
       console.log("PNG export successful:", exportResult);
-      console.log(`📊 Export result analysis:`, {
+      console.log(`Export result analysis:`, {
         totalBlobs: exportResult.exportBlobs.length,
         blobUrls: exportResult.exportBlobs.map(
           (blob, i) => `Blob ${i + 1}: ${blob.url.substring(0, 50)}...`,
@@ -92,7 +92,7 @@ export const PreviewExport: React.FC<PreviewExportProps> = ({ hotspots }) => {
 
   return (
     <Rows spacing="2u">
-      <Title size="small">📥 Export</Title>
+      <Title size="small">Export</Title>
 
       <Button
         variant="primary"
@@ -100,7 +100,7 @@ export const PreviewExport: React.FC<PreviewExportProps> = ({ hotspots }) => {
         onClick={handleExport}
         disabled={!hasHotspots || !isExportSupported || isExporting}
       >
-        {isExporting ? "Exporting..." : "📥 Export ZIP"}
+        {isExporting ? "Exporting..." : "Export ZIP"}
       </Button>
     </Rows>
   );
@@ -292,7 +292,7 @@ const generatePrototypeZip = async (
     const linkElement = document.createElement("a");
     linkElement.href = blobUrl;
     linkElement.download = fileName;
-    linkElement.textContent = `📥 Download ${fileName}`;
+    linkElement.textContent = `Right-click and open new tab to download ${fileName}`;
     linkElement.style.cssText = `
       position: fixed;
       top: 10px;
@@ -405,15 +405,15 @@ const generateViewerHTML = (
 </head>
 <body>
     <div class="header">
-        <h1>🧩 ${title}</h1>
+        <h1>Prototype Viewer</h1>
         <div class="page-counter">
             Page <span id="currentPage">1</span> of ${pageCount}
         </div>
-        <button class="reset-btn" onclick="goToPage(1)">🏠 Reset</button>
+        <button class="reset-btn" onclick="goToPage(1)">Reset</button>
     </div>
 
     <div class="instructions">
-        Click on the blue hotspots to navigate between pages • Press Home or 1 to reset to page 1
+        Click on the red hotspots to navigate between pages • Press Reset to reset to page 1
     </div>
 
     <div class="canvas-container">
@@ -434,7 +434,6 @@ const generateViewerHTML = (
         <div class="hotspot-navigation" id="hotspot-navigation">
             <!-- Hotspots will be dynamically populated based on current page -->
         </div>
-        <button class="close-btn" onclick="window.close()">Close</button>
     </div>
 
     <!-- Embed hotspot data directly in the HTML -->
@@ -600,22 +599,6 @@ body {
 }
 
 /* Debug mode - shows hotspot positioning clearly */
-.hotspot::before {
-    content: '🎯';
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    font-size: 1.2rem;
-    background: white;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
 .footer {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
@@ -882,7 +865,7 @@ function updateFooterHotspots(pageNumber) {
         const hotspotEl = document.createElement('div');
         hotspotEl.className = 'hotspot footer-hotspot';
         hotspotEl.title = \`Go to Page \${hotspot.targetPage}\`;
-        hotspotEl.textContent = \`🎯 \${hotspot.elementName}\`;
+        hotspotEl.textContent = \`\${hotspot.elementName}\`;
         
         // Add click handler
         const targetPage = hotspot.targetPage;

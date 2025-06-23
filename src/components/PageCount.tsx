@@ -47,7 +47,7 @@ export const PageCount: React.FC<PageCountProps> = ({
 
   return (
     <Rows spacing="2u">
-      <Title size="small">📄 Design Pages</Title>
+      <Title size="small">Design</Title>
 
       <Box padding="2u" borderRadius="standard" background="neutral">
         <Rows spacing="1u">
